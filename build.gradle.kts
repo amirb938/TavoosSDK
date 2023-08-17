@@ -8,9 +8,9 @@ plugins {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "ir.fastclick"
-            artifactId = "library"
-            version = "0.1.0"
+            groupId = "ir.fastclick.tavoosSDK"
+            artifactId = "tavoosSDKLibrary"
+            version = "0.3.0"
 
             from(components["java"])
         }
