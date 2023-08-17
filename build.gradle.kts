@@ -3,4 +3,16 @@ plugins {
     id("com.android.application") version "8.1.0" apply false
     id("org.jetbrains.kotlin.android") version "1.8.0" apply false
     id("maven-publish")
+    id("java")
+}
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "ir.fastclick"
+            artifactId = "library"
+            version = "0.1.0"
+
+            from(components["java"])
+        }
+    }
 }
