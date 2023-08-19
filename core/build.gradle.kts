@@ -17,13 +17,13 @@ android {
         getByName("debug") {
             keyAlias = "Amir"
             keyPassword = "12345678"
-            storeFile = file("C:\\Users\\Amir\\AndroidStudioProjects\\TavoosSDKsample\\key.jks")
+            storeFile = file("../key.jks")
             storePassword = "12345678"
         }
         create("release") {
             keyAlias = "Amir"
             keyPassword = "12345678"
-            storeFile = file("C:\\Users\\Amir\\AndroidStudioProjects\\TavoosSDKsample\\key.jks")
+            storeFile = file("../key.jks")
             storePassword = "12345678"
         }
     }
