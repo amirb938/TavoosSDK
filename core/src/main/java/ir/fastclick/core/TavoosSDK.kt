@@ -3,16 +3,16 @@ package ir.fastclick.core
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
-import com.google.android.gms.ads.identifier.AdvertisingIdClient
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException
-import com.google.android.gms.common.GooglePlayServicesRepairableException
-import java.io.IOException
-import java.util.UUID
 
 class TavoosSDK {
 
     private var preRollPrefixAddress = "https://video.tavoos.net/services/mobile/vast/"
-    private var secretKey: String = "1234" // Default secret key
+    private var secretKey: String = ""
+
+    companion object {
+        private const val SHARED_PREFERENCES_KEY = "AdvertiseIdPrefs"
+        private const val ADVERTISE_ID_KEY = "advertiseId"
+    }
 
     fun setSecretKey(key: String) {
         secretKey = key
@@ -28,57 +28,38 @@ class TavoosSDK {
             "device-os" to "android",
             "osVersion" to Build.VERSION.SDK_INT.toString(),
             "osAdvertisingId" to advertisingId,
-            "app-package-name" to packageName,
-            "secretKey" to secretKey
+            "app-package-name" to packageName
         )
 
         val paramString = params.map { (key, value) -> "$key=$value" }.joinToString("&")
-        return "$preRollPrefixAddress?$paramString"
+        return "$preRollPrefixAddress$secretKey?$paramString"
     }
 
-    private fun getAdvertisingId(context: Context): String {
-        return try {
-            val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
-            val advertisingId = adInfo.id ?: ""
-            advertisingId
-        } catch (e: IOException) {
-            ""
-        } catch (e: GooglePlayServicesNotAvailableException) {
-            ""
-        } catch (e: GooglePlayServicesRepairableException) {
-            ""
+    private fun getOrCreateAdvertisingId(context: Context): String {
+        var id = getAdvertiseIdFromSharedPreferences(context)
+        if (id.isEmpty()) {
+            id = generateRandomHexString()
+            saveAdvertiseIdToSharedPreferences(context, id)
         }
-    }
-
-    private fun generateRandomAdvertiseId(): String {
-        return UUID.randomUUID().toString()
+        return id
     }
 
     private fun saveAdvertiseIdToSharedPreferences(context: Context, advertiseId: String) {
         val sharedPreferences: SharedPreferences =
-            context.getSharedPreferences("AdvertiseIdPrefs", Context.MODE_PRIVATE)
+            context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        editor.putString("AdvertiseId", advertiseId)
+        editor.putString(ADVERTISE_ID_KEY, advertiseId)
         editor.apply()
     }
 
     private fun getAdvertiseIdFromSharedPreferences(context: Context): String {
         val sharedPreferences: SharedPreferences =
-            context.getSharedPreferences("AdvertiseIdPrefs", Context.MODE_PRIVATE)
-        return sharedPreferences.getString("AdvertiseId", "") ?: ""
+            context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return sharedPreferences.getString(ADVERTISE_ID_KEY, "") ?: ""
     }
 
-
-    private fun getOrCreateAdvertisingId(context: Context): String {
-        var advertisingId = getAdvertisingId(context)
-        if (advertisingId.isEmpty()) {
-            advertisingId = getAdvertiseIdFromSharedPreferences(context)
-            if (advertisingId.isEmpty()) {
-                advertisingId = generateRandomAdvertiseId()
-                saveAdvertiseIdToSharedPreferences(context, advertisingId)
-            }
-        }
-        return advertisingId
+    private fun generateRandomHexString(length: Int = 13): String {
+        val allowedChars = "0123456789abcdef"
+        return (1..length).map { allowedChars.random() }.joinToString("")
     }
-
 }
