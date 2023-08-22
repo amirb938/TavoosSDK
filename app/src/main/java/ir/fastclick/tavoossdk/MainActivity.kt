@@ -3,7 +3,7 @@ package ir.fastclick.tavoossdk
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import ir.fastclick.core.TavoosSDK
+import ir.fastclick.core.TavoosManager
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textHome: TextView
@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         textHome = findViewById(R.id.textHome)
 
-        val tavoosSDK = TavoosSDK().apply {
+        val tavoosSDK = TavoosManager().apply {
             setSecretKey("example-key")
         }
         val text = tavoosSDK.getVastAddress(this@MainActivity)

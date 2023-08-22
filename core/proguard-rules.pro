@@ -22,13 +22,7 @@
 # Keep public classes and methods that are referenced externally
 -keep public class ir.fastclick.core.** { public *; }
 
-# Keep the entry point of your library
--keepclassmembers class ir.fastclick.core.TavoosSDK {
-    public <init>();
-}
-
-# Keep methods related to retrieving the advertising ID
--keep class com.google.android.gms.ads.identifier.** { *; }
+-keep class ir.fastclick.core.TavoosManager { *; }
 
 # Keep resource names
 -keepclassmembers class **.R$* {
